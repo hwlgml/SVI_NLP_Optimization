@@ -108,7 +108,7 @@ $$
 ![image](https://github.com/user-attachments/assets/8423b253-ff59-4cc6-a616-d9a2b0cec61f)
 
 
-The goal is to optimize this volatility smile using the SVI model. For details on data acquisition and preprocessing, please refer to the [README.md](https://github.com/hwjihee) in the `data` folder.
+The goal is to optimize this volatility smile using the SVI model. For details on data acquisition and preprocessing, please refer to the 'Data` folder.
 
 **3.3.1 Objective Function in the SVI Model**
 The objective function, along with constraints, is classified as a non-linear programming (NLP) problem. In the SVI model, the function that represents the volatility smile is defined as follows:
