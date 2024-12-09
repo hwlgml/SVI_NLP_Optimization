@@ -39,7 +39,25 @@ The initial parameter setup in the SVI model significantly influences its abilit
 
 **2.2.2 Parameter Range:**
 
-(equation)
+$$
+0 \leq a \leq \max_{i} [\omega_i],
+$$
+
+$$
+0 \leq b \leq \frac{4}{\tau (1 + |\rho|)},
+$$
+
+$$
+-1 \leq \rho \leq 1,
+$$
+
+$$
+\min_{i}[x_i] \leq m \leq \max_{i}[x_i],
+$$
+
+$$
+0 < \sigma_{\min} \leq \sigma \leq 10.
+$$
 
 These constraints help ensure that the SVI model's parameters *(a, b, ρ, m, σ)* are set within reasonable and realistic ranges, allowing the model to avoid arbitrage while accurately fitting the implied volatility surface.
 
@@ -47,7 +65,9 @@ These constraints help ensure that the SVI model's parameters *(a, b, ρ, m, σ)
 
 ### 3.1 SVI Model
 
-(equation)
+$$
+w(k) = a + b \left( \rho (k - m) + \sqrt{(k - m)^2 + \sigma^2} \right)
+$$
 
 The Stochastic Volatility Inspired (SVI) model was introduced by Jim Gatheral of Merrill Lynch in 1999. It is a simple parametric model used to explain the volatility smile observed in the options market. The SVI model expresses implied volatility as a function of the option’s time to maturity and the difference between the strike price and the underlying asset price.
 
@@ -63,6 +83,26 @@ The Stochastic Volatility Inspired (SVI) model was introduced by Jim Gatheral of
 ### 3.2 SVI Jump-Wings Parameterization
 The **SVI Jump-Wings Parameterization** is inspired by the approach proposed by Tim Klassen, designed to reflect changes in the implied volatility surface more realistically. This parameterization uses implied variance instead of total implied variance and explicitly incorporates time-to-expiration dependency. It is defined using the following raw parameters:
 
+$$
+\nu_\tau = \frac{a + b \left( - \rho m + \sqrt{m^2 + \sigma^2} \right)}{\tau},
+$$
+
+$$
+\phi_\tau = \frac{1}{\sqrt{\omega_\tau}} \frac{b}{2} \left( \rho - \frac{m}{\sqrt{m^2 + \sigma^2}} \right),
+$$
+
+$$
+p_\tau = \frac{1}{\sqrt{\omega_\tau}} b (1 - \rho),
+$$
+
+$$
+c_\tau = \frac{1}{\sqrt{\omega_\tau}} b (1 + \rho),
+$$
+
+$$
+\hat{\nu}_\tau = \frac{1}{\tau} \left( a + b \sigma \sqrt{1 - \rho^2} \right).
+$$
+
 ### 3.3 SVI Model Optimization via Non-Linear Programming (NLP)
 
 ![image](https://github.com/user-attachments/assets/8423b253-ff59-4cc6-a616-d9a2b0cec61f)
@@ -73,27 +113,35 @@ The goal is to optimize this volatility smile using the SVI model. For details o
 **3.3.1 Objective Function in the SVI Model**
 The objective function, along with constraints, is classified as a non-linear programming (NLP) problem. In the SVI model, the function that represents the volatility smile is defined as follows:
 
-(equation)
+$$
+w(k) = a + b \left( \rho (k - m) + \sqrt{(k - m)^2 + \sigma^2} \right)
+$$
 
-This function models the implied volatility curve based on several parameters to fit the volatility smile. The term (equation) indicates how volatility changes with the strike price, exhibiting a non-linear relationship. Therefore, optimizing the SVI model involves solving a non-linear optimization problem to ensure that the volatility smile is properly fitted.
+This function models the implied volatility curve based on several parameters to fit the volatility smile. It indicates how volatility changes with the strike price, exhibiting a non-linear relationship. Therefore, optimizing the SVI model involves solving a non-linear optimization problem to ensure that the volatility smile is properly fitted.
 
 ## IV. Project Methodology
 
 ### 4.1 Definition of the Primal Problem
-The primal objective is to minimize the error between the market-observed total variance (equation) and the total variance calculated by the SVI model (equation). The Mean Squared Error (MSE) or Mean Absolute Error (MAE) is typically used to achieve this, and the primal problem is structured as:
+The primal objective is to minimize the error between the market-observed total variance and the total variance calculated by the SVI model. The Mean Squared Error (MSE) or Mean Absolute Error (MAE) is typically used to achieve this, and the primal problem is structured as:
 
-(equation)
+$$
+\min_{a, b, \rho, m, \sigma} \sum_{i=1}^{N} \left( \hat{w}(k_i) - w(k_i) \right)^2
+$$
 
-Where (equation) represents the number of volatility data points. The constraints ensuring convexity and arbitrage-free conditions are as follows:
+Where N represents the number of volatility data points. The constraints ensuring convexity and arbitrage-free conditions are as follows:
 
-(equation)
+$$
+b > 0, \quad -1 < \rho < 1, \quad \sigma > 0
+$$
 
 ### 4.2 Lagrangian Transformation
 The primal problem is converted into a Lagrangian to account for the imposed constraints. The Lagrangian is given by:
 
-(equation)
+$$
+L(a, b, \rho, m, \sigma, \lambda) = \sum_{i=1}^{N} \left( \hat{w}(k_i) - w(k_i) \right)^2 + \lambda_1 (b - 0) + \lambda_2 (\rho (1 - 1)) + \lambda_3 (\sigma - 0)
+$$
 
-Here, (equation) are the Lagrange multipliers that enforce the constraints.
+Here, lambda1, lambda2, and lambda3 are the Lagrange multipliers that enforce the constraints.
 
 ### 4.3 Types of NLP Optimization Algorithms
 - **Gradient-based Algorithms**:  
@@ -112,7 +160,10 @@ A common issue in non-linear optimization is getting stuck in a **local optimum*
 4.5.1 Definition of the Dual Problem
 By applying convex duality to the objective function and constraints presented in section 3.4.5.2, the primal problem can be transformed into a dual problem. This transformation can reduce the complexity of optimization or provide a new interpretation, allowing for the development of more efficient algorithms. The dual optimization problem for the SVI model is formulated as:
 
-**(equation)**
+$$
+\max_{\lambda} \; \inf_{a, b, \rho, m, \sigma} \; L(a, b, \rho, m, \sigma, \lambda)
+$$
+
 
 This equation redefines the Lagrangian function, where the primal variables *(a), (b), (ρ), (m), (σ)* are minimized, and the Lagrange multiplier *(λ)* is maximized. Compared to the primal problem, the dual problem has relaxed constraints, reducing the parameter space, making the optimization more efficient, and facilitating easier access to the global optimum. Furthermore, instead of applying penalties for violating constraints in the primal problem, the dual problem directly handles constraints through Lagrange multipliers, simplifying the optimization process.
 
@@ -207,7 +258,7 @@ The data used in this study consists of option trades made on August 5. The mark
 Despite the higher volatility on August 5, the RMSE is approximately 0.24, and the RMSE for option trades with other expiration dates is significantly lower. This demonstrates that the overall optimization was successful.
 
 ### 6.3 Performance Analysis: Objective Function Value
-By iteratively optimizing, we can analyze the performance by checking how much the initial objective function value, ( \sum_{i=1}^{N} (\hat{w}(k_i) - w(k_i))^2 ), has decreased. The larger the decrease, the better the optimization performance.
+By iteratively optimizing, we can analyze the performance by checking how much the initial objective function value has decreased. The larger the decrease, the better the optimization performance.
 
 ![image](https://github.com/user-attachments/assets/9ad2d0b3-c037-40ca-8103-e58a745f7e91)
 
@@ -237,7 +288,7 @@ We check whether the optimization of the volatility smile resulted in an arbitra
 In the end, no butterfly arbitrage was observed in any of the expiration date option data analyzed. This indicates that the volatility smile, as estimated by the SVI model, was convexly optimized for all log strike prices.
 
 **Analysis 2: Mathematical Analysis**
-Considering the SVI model's equation, this means that the second derivative of ( w(k) ) is positive for all values of ( k ). In other words, the differentiability shows that the volatility smile is continuous and smooth across all data points, without any sharp peaks, and the positive derivative confirms that the smile is convex.
+Considering the SVI model's equation, this means that the second derivative of w(k) is positive for all values of k. In other words, the differentiability shows that the volatility smile is continuous and smooth across all data points, without any sharp peaks, and the positive derivative confirms that the smile is convex.
 
 
 
