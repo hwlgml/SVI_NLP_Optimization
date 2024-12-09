@@ -8,7 +8,6 @@ This study utilizes SPX option data. Since options on the S&P 500 index are high
 - **Expiration information** is essential for analyzing the option's validity period.
 - **Implied volatility** reflects the market's expectations of volatility, playing a crucial role in option price determination.
 
----
 
 ## Data Information
 
@@ -38,7 +37,6 @@ As indicated, the dataset includes crucial information such as expiration dates,
 
 In this research, daily data is used for volatility analysis. This is because extreme volatility or volatility jumps can cause significant changes within a single day. The data from August 5, 2024, shows sharp volatility or volatility jumps, making it possible to conduct an in-depth analysis of arbitrage opportunities and market inefficiencies.
 
----
 
 ### When Applying the SVI Model:
 When applying the SVI model, it is common to focus on options where actual trades have occurred. This is because the SVI model explains implied volatility based on the actual market prices of options. To accurately draw the volatility smile curve, the implied volatility derived from the prices of traded options must be used. However, the acquired dataset includes not only traded options but also quoted data. Therefore, we filtered out options with a `trade_volume` of less than 1. 
@@ -51,8 +49,6 @@ The expiration date of an option is a critical variable in the SVI model. Since 
 
 #### Splitting Call and Put Data
 Finally, the data was split into call and put options. This separation is necessary because the price structure, volatility smiles, and market reactions for calls and puts differ. Call and put options have opposite pay-offs concerning the underlying asset's directional movement. Therefore, the pricing methods and the resulting implied volatility may differ. By analyzing call and put volatility smiles separately, we can better understand market participants' behavior and develop more accurate risk management strategies.
-
----
 
 ### Additional Preprocessing (Basics)
 
@@ -71,8 +67,6 @@ Finally, the data was split into call and put options. This separation is necess
 5. **Volatility Smile Visualization:**  
    The volatility smiles are visualized after scaling and preprocessing the data to observe the asymmetric volatility structures. This will guide the subsequent application of the SVI model.
 
----
-
 ### Additional Preprocessing (IQR & MAD Methods)
 
 1. **IQR Method:**  
@@ -80,8 +74,6 @@ Finally, the data was split into call and put options. This separation is necess
 
 2. **MAD Method:**  
    After applying the IQR method, the MAD (Median Absolute Deviation) method is used to further refine the dataset by adjusting the volatility smile of low-volume data, ensuring that remaining outliers are removed.
-
----
 
 ### Filtered Volatility Smile (Call Options)
 
